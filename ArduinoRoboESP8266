@@ -82,7 +82,7 @@ void backword(){
 void turnRight(){
   digitalWrite(IN_1, LOW);
   digitalWrite(IN_2, HIGH);
-  digitalWrite(IN_2, LOW);
+  digitalWrite(IN_3, LOW);
   digitalWrite(IN_4, HIGH);
 }
 void turnLeft(){

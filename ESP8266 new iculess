@@ -1,0 +1,58 @@
+#include <ESP8266WebServer.h>
+#include <Servo.h>
+
+Servo servo;
+ESP8266WebServer server(80);
+
+void setup(){
+  Serial.begin(115200);
+  WiFi.begin("your_SSID", "your_PASSWORD");
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(1000);
+    Serial.println("Connecting to WiFi...");
+  }
+  Serial.println("Connected to WiFi");
+  servo.attach(9); // initialize servo motor on pin D9
+  server.on("/", handleOnRequest);
+  server.on("/forward", handleForwardRequest);
+  server.on("/backward", handleBackwardRequest);
+  server.on("/left", handleLeftRequest);
+  server.on("/right", handleRightRequest);
+  server.on("/stop", handleStopRequest);
+  server.begin();
+}
+
+void loop(){
+  if (server.hasClient()) {
+    server.handleClient();
+  }
+}
+
+void handleOnRequest() {
+  server.send(200, "text/html", "<html><head><title>Robot Control</title></head><body><h1>Robot Control</h1><ul><li><a href=\"/forward\">Forward</a></li><li><a href=\"/backward\">Backward</a></li><li><a href=\"/left\">Left</a></li><li><a href=\"/right\">Right</a></li><li><a href=\"/stop\">Stop</a></li></ul></body></html>");
+}
+
+void handleForwardRequest() {
+  servo.write(0);
+  server.send(200, "text/plain", "Moving forward");  //correr pra frente
+}
+
+void handleBackwardRequest() {
+  servo.write(180);
+  server.send(200, "text/plain", "Moving backward"); //correr pra trás
+}
+
+void handleLeftRequest() {
+  servo.write(90);
+  server.send(200, "text/plain", "Turning left");  //virar esquerda
+}
+
+void handleRightRequest() {
+  servo.write(90);
+  server.send(200, "text/plain", "Turning right");  //virar direita
+}
+
+void handleStopRequest() {
+  servo.write(0);
+  server.send(200, "text/plain", "Stopping"); //parar
+}

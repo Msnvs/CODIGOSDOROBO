@@ -1,0 +1,15 @@
+int sensor = A0;
+float Temperatura;
+
+void setup() {
+  Serial.begin(9600);
+
+}
+
+void loop() {
+  int valor = analogRead(sensor);
+Temperatura = ((valor*5)/1023)/0,01;
+Serial.print("Temperatura=");
+Serial.println(Temperatura);
+delay(300);
+}

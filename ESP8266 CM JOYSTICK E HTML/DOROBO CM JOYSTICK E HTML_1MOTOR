@@ -1,0 +1,106 @@
+
+#define ENA 4 //velocidade habilitada do motor direito
+#define IN_1  0 //in1 motor direito
+#define IN_2 2 //in2 motor direito
+#define IN_3 12 //in3 motor esquerdo
+#define IN_4 13 //in4 motor esquerdo
+#define ENB 15 // velocidade habilitada motor esquedro
+#define Light 16
+#define JOYSTICK_PIN A0
+#define JOYSTICK_THRESHOLD 100
+
+int speedCar = 150;
+char Data;
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(ENA, OUTPUT);
+  pinMode(IN_1, OUTPUT);
+  pinMode(IN_2, OUTPUT);
+  pinMode(IN_3, OUTPUT);
+  pinMode(IN_4, OUTPUT);
+  pinMode(ENB, OUTPUT);
+  pinMode(Light, OUTPUT);
+  pinMode(JOYSTICK_PIN, INPUT);
+
+  delay(1000);
+  Serial.println(">>setup");
+  WiFi.mode(WIFI_AP);
+}
+
+void loop() {
+
+  int joystickValue = analogRead(JOYSTICK_PIN);
+  if (joystickValue < JOYSTICK_THRESHOLD) {
+    Data = 'S';
+  } else {
+    Data = 'f';
+  }
+
+ if(Data=='a')speedCar = 70;
+  else if(Data=='b')speedCar = 150;
+  else if(Data=='c')speedCar = 255;
+  else if(Data=='o')digitalWrite(Light, HIGH);
+  else if(Data=='f')digitalWrite(Light, LOW);
+  else if(Data=='F')forword();
+  else if(Data=='B')backword();
+  else if(Data=='R') turnRight();
+  else if(Data=='L')turnLeft();
+ else if(Data=='S')Stop();
+  analogWrite(ENA, speedCar);
+  analogWrite(ENB, speedCar); 
+
+}
+
+void forword(){
+  digitalWrite(IN_1, HIGH);
+  digitalWrite(IN_2, LOW);
+  digitalWrite(IN_3, LOW);
+  digitalWrite(IN_4, HIGH);
+}
+
+void backword(){
+  digitalWrite(IN_1, LOW);
+  digitalWrite(IN_2, HIGH);
+  digitalWrite(IN_3, HIGH);
+  digitalWrite(IN_4, LOW);
+}
+
+void turnRight(){
+  digitalWrite(IN_1, LOW);
+  digitalWrite(IN_2, HIGH);
+  digitalWrite(IN_3, LOW);
+  digitalWrite(IN_4, HIGH);
+}
+
+void turnLeft(){
+  digitalWrite(IN_1, HIGH);
+  digitalWrite(IN_2, LOW);
+  digitalWrite(IN_3, HIGH);
+  digitalWrite(IN_4, LOW);
+}
+
+void Stop(){
+  digitalWrite(IN_1, LOW);
+  digitalWrite(IN_2, LOW);
+  digitalWrite(IN_3, LOW);
+  digitalWrite(IN_4, LOW);
+}
+void handleOnRequest() {
+  String html = "<html>";
+  html += "<head>";
+  html += "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n";
+  html += "<title>ESP8266 Car Control</title>\n";
+  html += "</head>";
+  html += "<body>";
+  html += "<h1>ESP8266 Car Control</h1>";
+  html += "<p>Use the buttons</p>";
+  html += "<form action=\"/forward\">";
+  html += "<input type=\"submit\" value=\"Forward\">";
+  html += "</form>";
+  html += "</body>";
+}
+
+void handleForwardRequest() {
+  Data = 'f';
+}

@@ -1,0 +1,20 @@
+int velocidade;
+
+
+void setup() {
+pinMode(5,OUTPUT);
+pinMode(6,OUTPUT);
+
+
+}
+
+void loop() {
+Serial.begin(120);
+digitalWrite(5,0);
+
+digitalWrite(6,120);
+
+
+
+
+}

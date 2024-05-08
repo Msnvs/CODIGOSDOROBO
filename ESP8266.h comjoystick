@@ -1,0 +1,91 @@
+#include <ESP8266WiFi.h>
+
+// WiFi parameters to be configured
+const char* ssid = "your_SSID";
+const char* password = "your_PASSWORD";
+
+// Motor pin definitions
+const int motorPin1 = 5; // Motor pin 1
+const int motorPin2 = 4; // Motor pin 2
+
+// Joystick pin definitions
+const int joystickXPin = A0;
+const int joystickYPin = A1;
+
+WiFiServer server(80);
+
+void setup() {
+  Serial.begin(115200);
+  delay(10);
+
+  // Initialize motor pins as outputs
+  pinMode(motorPin1, OUTPUT);
+  pinMode(motorPin2, OUTPUT);
+
+  // Connect to WiFi network
+  Serial.println();
+  Serial.println();
+  Serial.print("Connecting to ");
+  Serial.println(ssid);
+
+  WiFi.begin(ssid, password);
+
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("");
+  Serial.println("WiFi connected");
+
+  // Start the server
+  server.begin();
+  Serial.println("Server started");
+
+  // Print the IP address
+  Serial.println(WiFi.localIP());
+}
+
+void loop() {
+  // Check if a client has connected
+  WiFiClient client = server.available();
+  if (!client) {
+    return;
+  }
+
+  // Wait until the client sends some data
+  Serial.println("new client");
+  while(!client.available()){
+    delay(1);
+  }
+
+  // Read the first line of the request
+  String req = client.readStringUntil('\r');
+  Serial.println(req);
+  client.flush();
+
+  // Set motor direction based on the request
+  if(req.indexOf("/forward") != -1) {
+    digitalWrite(motorPin1, HIGH);
+    digitalWrite(motorPin2, LOW);
+  } else if(req.indexOf("/backward") != -1) {
+    digitalWrite(motorPin1, LOW);
+    digitalWrite(motorPin2, HIGH);
+  } else if(req.indexOf("/stop") != -1) {
+    digitalWrite(motorPin1, LOW);
+    digitalWrite(motorPin2, LOW);
+  }
+
+  // Read joystick values
+  int joystickXValue = analogRead(joystickXPin);
+  int joystickYValue = analogRead(joystickYPin);
+
+  // Map joystick values to motor speed
+  int motorSpeed = map(joystickYValue, 0, 1023, 0, 255);
+
+  // Set motor speed
+  analogWrite(motorPin1, motorSpeed);
+  analogWrite(motorPin2, motorSpeed);
+
+  // Delay to debounce joystick values
+  delay(10);
+}

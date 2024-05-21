@@ -1,0 +1,54 @@
+#include <nRF24L01.h>
+
+RF24 radio(8, 9); // CE, CSN
+int xAxis = 0;
+int yAxis = 0;
+int button = 0;
+
+const byte address[6] = "00001";
+
+struct Data_Package {
+  byte rideCommand;
+  byte attackCommand;
+};
+
+Data_Package data;
+
+void setup() {
+  Serial.begin(9600);
+  radio.begin();
+  radio.openReadingPipe(0, address);
+  radio.setPALevel(RF24_PA_MIN);
+  radio.startListening();
+}
+
+void loop() {
+  if (radio.available()) {
+    radio.read(&data, sizeof(Data_Package));
+    Serial.print("Ride Command: ");
+    Serial.println(data.rideCommand);
+    Serial.print("Attack Command: ");
+    Serial.println(data.attackCommand);
+
+    // Add code here to control the robot based on the received commands
+  }
+
+  // Read joystick X and Y axis values and button value
+  xAxis = analogRead(A0);
+  yAxis = analogRead(A1);
+  button = digitalRead(2);
+
+  // Send X, Y, and Button values as separate packets
+  char xybData[10];
+  itoa(xAxis, xybData, 10);
+  radio.write(&xybData, sizeof(xybData));
+  delay(10);
+
+  itoa(yAxis, xybData, 10);
+  radio.write(&xybData, sizeof(xybData));
+  delay(10);
+
+  itoa(button, xybData, 10);
+  radio.write(&xybData, sizeof(xybData));
+  delay(10);
+}

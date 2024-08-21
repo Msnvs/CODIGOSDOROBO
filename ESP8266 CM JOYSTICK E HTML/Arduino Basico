@@ -1,0 +1,28 @@
+#include <Servo.h>
+
+const int SensorEsq = 6;
+const int SensorDir = 7;
+
+Servo motor;
+
+void setup() {
+  motor.attach(2); 
+  pinMode(SensorEsq, INPUT);
+  pinMode(SensorEsq, INPUT);
+}
+
+void loop() {
+  int SensorEsq = digitalRead(SensorEsq);
+  int SensorDir = digitalRead(SensorEsq);
+
+  if (SensorEsq && SensorDir) {
+    motor.write(90); // Posição neutra do motor
+  } else if (SensorEsq) {
+    motor.write(120); // Posição de giro para a esquerda do motor
+  } else if (SensorDir) {
+    motor.write(60); // Posição de giro para a direita do motor
+  } else {
+    motor.write(90); // Posição neutra do motor
+  }
+  delay(50);
+}

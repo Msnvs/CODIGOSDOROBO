@@ -1,0 +1,67 @@
+#include <Servo.h>
+
+const int IN1 = 5;
+const int IN2 = 6;
+const int IN3 = 10;
+const int IN4 = 11;
+const int SENSOR_ESQUERDO = A0;
+const int SENSOR_DIREITO = A1;
+const int LED_VERMELHO = 2;
+const int LED_VERDE = 3;
+
+void setup() {
+  pinMode(IN1, OUTPUT);
+  pinMode(IN2, OUTPUT);
+  pinMode(IN3, OUTPUT);
+  pinMode(IN4, OUTPUT);
+  pinMode(SENSOR_ESQUERDO, INPUT);
+  pinMode(SENSOR_DIREITO, INPUT);
+  pinMode(LED_VERMELHO, OUTPUT);
+  pinMode(LED_VERDE, OUTPUT);
+  Serial.begin(9600);
+}
+
+void loop() {
+  int leituraEsquerda = analogRead(SENSOR_ESQUERDO);
+  int leituraDireita = analogRead(SENSOR_DIREITO);
+
+  if (leituraEsquerda < 500 && leituraDireita < 500) {
+    // Seguir em frente
+    analogWrite(IN1, 255);
+    analogWrite(IN2, 0);
+    analogWrite(IN3, 255);
+    analogWrite(IN4, 0);
+    Serial.println("Seguindo linha");
+  } else if (leituraEsquerda < 500) {
+    // Virar para a esquerda
+    analogWrite(IN1, 0);
+    analogWrite(IN2, 0);
+    analogWrite(IN3, 255);
+    analogWrite(IN4, 0);
+    Serial.println("Virando para a esquerda");
+  } else if (leituraDireita < 500) {
+    // Virar para a direita
+    analogWrite(IN1, 255);
+    analogWrite(IN2, 0);
+    analogWrite(IN3, 0);
+    analogWrite(IN4, 0);
+    Serial.println("Virando para a direita");
+  } else {
+    // Parar
+    analogWrite(IN1, 0);
+    analogWrite(IN2, 0);
+    analogWrite(IN3, 0);
+    analogWrite(IN4, 0);
+    Serial.println("Perdido");
+  }
+
+  // Piscar LEDs
+  digitalWrite(LED_VERMELHO, HIGH);
+  delay(500);
+  digitalWrite(LED_VERMELHO, LOW);
+  delay(500);
+  digitalWrite(LED_VERDE, HIGH);
+  delay(500);
+  digitalWrite(LED_VERDE, LOW);
+  delay(500);
+}

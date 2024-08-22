@@ -1,25 +1,54 @@
+Analogico:
 #include <Servo.h>
 
-const int SensorEsq = 6;
-const int SensorDir = 7;
+const int leftSensor = A0;
+const int rightSensor = A1;
 
 Servo motor;
 
 void setup() {
-  motor.attach(2); 
-  pinMode(SensorEsq, INPUT);
-  pinMode(SensorEsq, INPUT);
+  motor.attach(2); // Pino de controle do motor
 }
 
 void loop() {
-  int SensorEsq = digitalRead(SensorEsq);
-  int SensorDir = digitalRead(SensorEsq);
+  int leftValue = analogRead(leftSensor);
+  int rightValue = analogRead(rightSensor);
 
-  if (SensorEsq && SensorDir) {
+  if (leftValue > 500 && rightValue > 500) {
     motor.write(90); // Posição neutra do motor
-  } else if (SensorEsq) {
+  } else if (leftValue > 500) {
     motor.write(120); // Posição de giro para a esquerda do motor
-  } else if (SensorDir) {
+  } else if (rightValue > 500) {
+    motor.write(60); // Posição de giro para a direita do motor
+  } else {
+    motor.write(90); // Posição neutra do motor
+  }
+  delay(50);
+}
+
+Digital:
+#include <Servo.h>
+
+const int leftSensor = 6;
+const int rightSensor = 7;
+
+Servo motor;
+
+void setup() {
+  motor.attach(2); // Pino de controle do motor
+  pinMode(leftSensor, INPUT);
+  pinMode(rightSensor, INPUT);
+}
+
+void loop() {
+  int leftValue = digitalRead(leftSensor);
+  int rightValue = digitalRead(rightSensor);
+
+  if (leftValue && rightValue) {
+    motor.write(90); // Posição neutra do motor
+  } else if (leftValue) {
+    motor.write(120); // Posição de giro para a esquerda do motor
+  } else if (rightValue) {
     motor.write(60); // Posição de giro para a direita do motor
   } else {
     motor.write(90); // Posição neutra do motor

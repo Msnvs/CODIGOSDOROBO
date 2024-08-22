@@ -1,76 +1,59 @@
 #include <Servo.h>
 
-Servo NLEchoppa;
+const int leftSensor = A0;
+const int centerSensor = A1;
+const int rightSensor = A2;
+const int ledLeft = 4; // Pino do LED esquerdo
+const int ledRight = 5; // Pino do LED direito
 
-const int IN1 = 5;  
-const int IN2 = 6;  
-const int IN3 = 10; 
-const int IN4 = 11;
-const int SENSOR_ESQUERDO = A0; 
-const int SENSOR_DIREITO = A1;  
-const int LED_VERMELHO = 2; 
-const int LED_VERDE = 3; 
-
-const int VELOCIDADE_MAXIMA = 255;
-const int VELOCIDADE_MINIMA = 0;
-
-const int SEGUINDO_LINHA = 0;
-const int PERDIDO = 1;
-
-int estado = SEGUINDO_LINHA;
-int velocidadeEsquerda = VELOCIDADE_MAXIMA;
-int velocidadeDireita = VELOCIDADE_MAXIMA;
-
+Servo motor; // Cria um objeto Servo para controlar o motor
 
 void setup() {
-  pinMode(IN1, OUTPUT);
-  pinMode(IN2, OUTPUT);
-  pinMode(IN3, OUTPUT);
-  pinMode(IN4, OUTPUT);
-  pinMode(SENSOR_ESQUERDO, INPUT);
-  pinMode(SENSOR_DIREITO, INPUT);
-  pinMode(LED_VERMELHO, OUTPUT);
-  pinMode(LED_VERDE, OUTPUT);
-  Serial.begin(9600);
+  pinMode(leftSensor, INPUT);
+  pinMode(centerSensor, INPUT);
+  pinMode(rightSensor, INPUT);
+  pinMode(ledLeft, OUTPUT);
+  pinMode(ledRight, OUTPUT);
+  motor.attach(2); // Pino de controle do motor (ponte H)
+  
+  // Liga os LEDs como faróis do carro
+  digitalWrite(ledLeft, HIGH);
+  digitalWrite(ledRight, HIGH);
 }
 
 void loop() {
-  int leituraEsquerda = analogRead(SENSOR_ESQUERDO);
-  int leituraDireita = analogRead(SENSOR_DIREITO);
+  int leftValue = analogRead(leftSensor);
+  int centerValue = analogRead(centerSensor);
+  int rightValue = analogRead(rightSensor);
 
-  if (leituraEsquerda < 500 && leituraDireita < 500) { //2 senses .seguir em frente
-    estado = SEGUINDO_LINHA;
-    velocidadeEsquerda = VELOCIDADE_MAXIMA;
-    velocidadeDireita = VELOCIDADE_MAXIMA;
-    Serial.println("Seguindo linha");
-  } else if (leituraEsquerda < 500 && leituraDireita > 500) { //sense esq . virar para a esquerda
-    estado = SEGUINDO_LINHA;
-    velocidadeEsquerda = VELOCIDADE_MINIMA;
-    velocidadeDireita = VELOCIDADE_MAXIMA;
-    Serial.println("Virando para a esquerda");
-  } else if (leituraEsquerda > 500 && leituraDireita < 500) { //sens dir . virar para a direita
-    estado = SEGUINDO_LINHA;
-    velocidadeEsquerda = VELOCIDADE_MAXIMA;
-    velocidadeDireita = VELOCIDADE_MINIMA;
-    Serial.println("Virando para a direita");
-  } else { // Sem linha, parar
-    estado = PERDIDO;
-    velocidadeEsquerda = VELOCIDADE_MINIMA;
-    velocidadeDireita = VELOCIDADE_MINIMA;
-    Serial.println("Perdido");
+  if (centerValue > 700) { // Se o sensor central detecta a linha com mais intensidade
+    forward(); // Motor vai para frente
+  } else if (leftValue > 500) { // Se o sensor esquerdo detecta a linha
+    turnLeft(); // Motor vira para a esquerda
+  } else if (rightValue > 500) { // Se o sensor direito detecta a linha
+    turnRight(); // Motor vira para a direita
+  } else { // Se nenhum sensor detecta a linha
+    stop(); // Motor para
   }
+  delay(50);
+}
 
-  analogWrite(IN1, velocidadeEsquerda);
-  analogWrite(IN2, 0);
-  analogWrite(IN3, velocidadeDireita);
-  analogWrite(IN4, 0);
+void forward() {
+  motor.write(180); // Motor vai para frente
+}
 
-  digitalWrite(LED_VERMELHO, HIGH);
-  delay(500);
-  digitalWrite(LED_VERMELHO, LOW);
-  delay(500);
-  digitalWrite(LED_VERDE, HIGH);
-  delay(500);
-  digitalWrite(LED_VERDE, LOW);
-  delay(500);
+void backward() {
+  motor.write(0); // Motor vai para trás
+}
+
+void turnLeft() {
+  motor.write(120); // Motor vira para a esquerda
+}
+
+void turnRight() {
+  motor.write(60); // Motor vira para a direita
+}
+
+void stop() {
+  motor.write(90); // Motor para
 }

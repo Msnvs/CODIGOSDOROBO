@@ -1,0 +1,78 @@
+const int leftMotorForward = 2;  // Pin for left motor forward
+const int leftMotorBackward = 3; // Pin for left motor backward
+const int rightMotorForward = 4; // Pin for right motor forward
+const int rightMotorBackward = 5; // Pin for right motor backward
+
+const int leftSensor = A0;
+const int centerSensor = A1;
+const int rightSensor = A2;
+const int ledLeft = 6; // Pin for left LED
+const int ledRight = 7; // Pin for right LED
+
+void setup() {
+  pinMode(leftMotorForward, OUTPUT);
+  pinMode(leftMotorBackward, OUTPUT);
+  pinMode(rightMotorForward, OUTPUT);
+  pinMode(rightMotorBackward, OUTPUT);
+  pinMode(leftSensor, INPUT);
+  pinMode(centerSensor, INPUT);
+  pinMode(rightSensor, INPUT);
+  pinMode(ledLeft, OUTPUT);
+  pinMode(ledRight, OUTPUT);
+  
+  // Initialize LEDs as car headlights
+  digitalWrite(ledLeft, HIGH);
+  digitalWrite(ledRight, HIGH);
+}
+
+void loop() {
+  int leftValue = analogRead(leftSensor);
+  int centerValue = analogRead(centerSensor);
+  int rightValue = analogRead(rightSensor);
+
+  if (centerValue > 700) { // If center sensor detects the line with high intensity
+    forward(); // Move both motors forward
+  } else if (leftValue > 500) { // If left sensor detects the line
+    turnLeft(); // Turn left
+  } else if (rightValue > 500) { // If right sensor detects the line
+    turnRight(); // Turn right
+  } else { // If no sensor detects the line
+    stop(); // Stop both motors
+  }
+  delay(50);
+}
+
+void forward() {
+  digitalWrite(leftMotorForward, HIGH);
+  digitalWrite(leftMotorBackward, LOW);
+  digitalWrite(rightMotorForward, HIGH);
+  digitalWrite(rightMotorBackward, LOW);
+}
+
+void backward() {
+  digitalWrite(leftMotorForward, LOW);
+  digitalWrite(leftMotorBackward, HIGH);
+  digitalWrite(rightMotorForward, LOW);
+  digitalWrite(rightMotorBackward, HIGH);
+}
+
+void turnLeft() {
+  digitalWrite(leftMotorForward, LOW);
+  digitalWrite(leftMotorBackward, HIGH);
+  digitalWrite(rightMotorForward, HIGH);
+  digitalWrite(rightMotorBackward, LOW);
+}
+
+void turnRight() {
+  digitalWrite(leftMotorForward, HIGH);
+  digitalWrite(leftMotorBackward, LOW);
+  digitalWrite(rightMotorForward, LOW);
+  digitalWrite(rightMotorBackward, HIGH);
+}
+
+void stop() {
+  digitalWrite(leftMotorForward, LOW);
+  digitalWrite(leftMotorBackward, LOW);
+  digitalWrite(rightMotorForward, LOW);
+  digitalWrite(rightMotorBackward, LOW);
+}

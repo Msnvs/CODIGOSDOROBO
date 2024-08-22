@@ -1,59 +1,66 @@
 #include <Servo.h>
 
-const int leftSensor = A0;
-const int centerSensor = A1;
-const int rightSensor = A2;
-const int ledLeft = 4; // Pino do LED esquerdo
-const int ledRight = 5; // Pino do LED direito
+Servo MotorEsquerdo;  
+Servo MotorDireito; 
 
-Servo motor; // Cria um objeto Servo para controlar o motor
+const int SensorEsquerdo = A0;
+const int SensorCentral = A1;
+const int SensorDireita = A2;
+const int Led1 = 6; 
+const int Led2 = 7; 
 
 void setup() {
-  pinMode(leftSensor, INPUT);
-  pinMode(centerSensor, INPUT);
-  pinMode(rightSensor, INPUT);
-  pinMode(ledLeft, OUTPUT);
-  pinMode(ledRight, OUTPUT);
-  motor.attach(2); // Pino de controle do motor (ponte H)
+  pinMode(SensorEsquerdo, INPUT);
+  pinMode(SensorCentral, INPUT);
+  pinMode(SensorDireita, INPUT);
+  pinMode(Led1, OUTPUT);
+  pinMode(Led2, OUTPUT);
   
-  // Liga os LEDs como faróis do carro
-  digitalWrite(ledLeft, HIGH);
-  digitalWrite(ledRight, HIGH);
+  digitalWrite(Led1, HIGH);
+  digitalWrite(Led2, HIGH);
+  
+  MotorEsquerdo.attach(9);  
+  MotorDireito.attach(10); 
 }
 
 void loop() {
-  int leftValue = analogRead(leftSensor);
-  int centerValue = analogRead(centerSensor);
-  int rightValue = analogRead(rightSensor);
+  int leftValue = analogRead(SensorEsquerdo);
+  int centerValue = analogRead(SensorCentral);
+  int rightValue = analogRead(SensorDireita);
 
-  if (centerValue > 700) { // Se o sensor central detecta a linha com mais intensidade
-    forward(); // Motor vai para frente
-  } else if (leftValue > 500) { // Se o sensor esquerdo detecta a linha
-    turnLeft(); // Motor vira para a esquerda
-  } else if (rightValue > 500) { // Se o sensor direito detecta a linha
-    turnRight(); // Motor vira para a direita
-  } else { // Se nenhum sensor detecta a linha
-    stop(); // Motor para
+  if (centerValue > 700) { 
+    forward(); 
+  } else if (leftValue > 500) { 
+    turnLeft(); 
+  } else if (rightValue > 500) { 
+    turnRight(); 
+  } else { 
+    stop(); 
   }
   delay(50);
 }
 
 void forward() {
-  motor.write(180); // Motor vai para frente
+  MotorEsquerdo.write(90);  
+  MotorDireito.write(90); 
 }
 
 void backward() {
-  motor.write(0); // Motor vai para trás
+  MotorEsquerdo.write(0);  
+  MotorDireito.write(0); 
 }
 
 void turnLeft() {
-  motor.write(120); // Motor vira para a esquerda
+  MotorEsquerdo.write(0);  
+  MotorDireito.write(90); 
 }
 
 void turnRight() {
-  motor.write(60); // Motor vira para a direita
+  MotorEsquerdo.write(90); 
+  MotorDireito.write(0);  
 }
 
 void stop() {
-  motor.write(90); // Motor para
+  MotorEsquerdo.write(90); 
+  MotorDireito.write(90); 
 }

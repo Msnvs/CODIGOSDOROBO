@@ -1,0 +1,103 @@
+#include <Servo.h>
+#include <MFRC522.h>
+#include <LiquidCrystal.h>
+
+const int Pinosensor = A0; 
+const int Pinocentral = 9;
+const int PortaoAbre = 120;
+const int Portaofecha = 30;
+const int Ledabrir = 6; 
+const int Ledfechar = 7; 
+const int RST_PIN = 5; 
+const int SS_PIN = 53; 
+const int buzina = 8; 
+const int lerverde = 2; 
+const int ledvermelho = 3; 
+
+Servo Portao; 
+MFRC522 mfrc522(SS_PIN, RST_PIN); 
+LiquidCrystal_I2C lcd(0x27, 16, 2); 
+
+String placasAutorizadas[] = {"ABC1234", "DEF5678", "COMEx3r3k4"}; 
+String placaLida = ""; 
+
+void setup() {
+  Portao.attach(Pinocentral); 
+  pinMode(Pinosensor, INPUT); 
+  pinMode(Ledabrir, OUTPUT); 
+  pinMode(Ledfechar, OUTPUT); 
+  pinMode(buzina, OUTPUT); 
+  pinMode(lerverde, OUTPUT); 
+  pinMode(ledvermelho, OUTPUT); 
+  mfrc522.PCD_Init(); 
+  lcd.init(); 
+  lcd.backlight(); 
+  lcd.setCursor(0, 0); 
+  lcd.print("Sistema de"); 
+  lcd.setCursor(0, 1); 
+  lcd.print("Reconhecimento"); 
+  delay(2000); 
+  lcd.clear(); 
+}
+
+void loop() {
+  int ArivarCensor = analogRead(Pinosensor); 
+
+  if (ArivarCensor < 500) { 
+    lerPlaca(); 
+  } else { 
+    Fechar(); 
+  }
+
+  delay(50); 
+}
+
+void lerPlaca() {
+  if (mfrc522.PICC_IsNewCardPresent() && mfrc522.PICC_ReadCardSerial()) {
+    placaLida = "";
+    for (byte i = 0; i < mfrc522.uid.size; i++) {
+      placaLida += String(mfrc522.uid.uidByte[i], HEX);
+    }
+    placaLida.toUpperCase();
+    lcd.setCursor(0, 0); 
+    lcd.print("Placa lida:"); 
+    lcd.setCursor(0, 1); 
+    lcd.print(placaLida); 
+    delay(1000); 
+    lcd.clear(); 
+    if (isPlacaAutorizada(placaLida)) {
+      Abrir(); 
+      tone(buzina, 1000, 500); 
+      digitalWrite(lerverde, HIGH); 
+      delay(1000); 
+      digitalWrite(lerverde, LOW); 
+    } else {
+      digitalWrite(ledvermelho, HIGH); 
+      delay(1000); 
+      digitalWrite(ledvermelho, LOW); 
+    }
+  }
+}
+
+bool isPlacaAutorizada(String placa) {
+  for (int i = 0; i < sizeof(placasAutorizadas) / sizeof(placasAutorizadas[0]); i++) {
+    if (placa.equals(placasAutorizadas[i])) {
+      return true; 
+    }
+  }
+  return false; 
+}
+
+void Abrir() {
+  digitalWrite(Ledabrir, HIGH); 
+  Portao.write(PortaoAbre);
+  delay(1000); 
+  digitalWrite(Ledabrir, LOW); 
+}
+
+void Fechar() {
+  digitalWrite(Ledfechar, HIGH); 
+  Portao.write(Portaofecha);
+  delay(1000); 
+  digitalWrite(Ledfechar, LOW); 
+}

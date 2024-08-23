@@ -24,43 +24,43 @@ void setup() {
 }
 
 void loop() {
-  int leftValue = analogRead(SensorEsquerdo);
-  int centerValue = analogRead(SensorCentral);
-  int rightValue = analogRead(SensorDireita);
+  int moveresquerda = analogRead(SensorEsquerdo);
+  int movercentral = analogRead(SensorCentral);
+  int moverdireita = analogRead(SensorDireita);
 
-  if (centerValue > 700) { 
-    forward(); 
-  } else if (leftValue > 500) { 
-    turnLeft(); 
-  } else if (rightValue > 500) { 
-    turnRight(); 
+  if (movercentral > 700) { 
+   frente(); 
+  } else if (moveresquerda > 500) { 
+    esquerda(); 
+  } else if (moverdireita > 500) { 
+    direita(); 
   } else { 
-    stop(); 
+    parar(); 
   }
   delay(50);
 }
 
-void forward() {
+void frente() {
   MotorEsquerdo.write(90);  
   MotorDireito.write(90); 
 }
 
-void backward() {
+void tras() {
   MotorEsquerdo.write(0);  
   MotorDireito.write(0); 
 }
 
-void turnLeft() {
+void esquerda() {
   MotorEsquerdo.write(0);  
   MotorDireito.write(90); 
 }
 
-void turnRight() {
+void direita() {
   MotorEsquerdo.write(90); 
   MotorDireito.write(0);  
 }
 
-void stop() {
+void parar() {
   MotorEsquerdo.write(90); 
   MotorDireito.write(90); 
 }

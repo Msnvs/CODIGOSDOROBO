@@ -1,16 +1,19 @@
-
 #include <Servo.h>
 
 const int Pinosensor = A0; 
 const int Pinocentral = 9;
 const int PortaoAbre = 120;
 const int POrtaoFecha = 30;
+const int LedVermelho = 4; 
+const int LedVerde = 5; 
 
 Servo Portao; 
 
 void setup() {
   Portao.attach(Pinocentral); 
   pinMode(Pinosensor, INPUT); 
+  pinMode(LedVermelho, OUTPUT); 
+  pinMode(LedVerde, OUTPUT); 
 }
 
 void loop() {
@@ -22,6 +25,8 @@ void loop() {
     Fechar(); 
   }
 
+  piscarLeds();
+
   delay(50); 
 }
 
@@ -31,4 +36,13 @@ void Abrir() {
 
 void Fechar() {
   Portao.write(POrtaoFecha);
+}
+
+void piscarLeds() {
+  digitalWrite(LedVermelho, HIGH); 
+  digitalWrite(LedVerde, LOW); 
+  delay(50); 
+  digitalWrite(LedVermelho, LOW); 
+  digitalWrite(LedVerde, HIGH); 
+  delay(50); 
 }

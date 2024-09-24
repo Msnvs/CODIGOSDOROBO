@@ -1,0 +1,64 @@
+int led = 2;
+int leda = 3;
+int ledb = 4;
+int ledc = 5;
+
+void setup() {
+  pinMode(led, OUTPUT);
+  pinMode(leda, OUTPUT);
+  pinMode(ledb, OUTPUT);
+  pinMode(ledc, OUTPUT);
+}
+
+void loop() {
+  int sensorValue = analogRead(A0);
+
+  // LED sequence
+  digitalWrite(leda, HIGH);
+  delay(100);
+  digitalWrite(leda, LOW);
+  digitalWrite(ledb, HIGH);
+  delay(100);
+  digitalWrite(ledb, LOW);
+  digitalWrite(ledc, HIGH);
+  delay(100);
+  digitalWrite(ledc, LOW);
+  digitalWrite(led, HIGH);
+  delay(100);
+  digitalWrite(led, LOW);
+  digitalWrite(ledc, HIGH);
+  delay(100);
+  digitalWrite(ledc, LOW);
+  digitalWrite(ledb, HIGH);
+  delay(100);
+  digitalWrite(ledb, LOW);
+  digitalWrite(leda, HIGH);
+  delay(100);
+  digitalWrite(leda, LOW);
+  
+  for (int x = 2; x <= 6; x++) {
+    digitalWrite(x, HIGH);
+    delay(100);
+    digitalWrite(x, LOW);
+  }
+
+  for (int x = 6; x >= 2; x--) {
+    digitalWrite(x, HIGH);
+    delay(100);
+    digitalWrite(x, LOW);
+  }
+
+  // Voltage-controlled delay
+  float voltage = sensorValue * 0.12;
+  for (int x = 2; x <= 6; x++) {
+    digitalWrite(x, HIGH);
+    delay(voltage);
+    digitalWrite(x, LOW);
+  }
+
+  for (int x = 6; x >= 2; x--) {
+    digitalWrite(x, HIGH);
+    delay(voltage);
+    digitalWrite(x, LOW);
+  }
+}

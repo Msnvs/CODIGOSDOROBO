@@ -1,0 +1,60 @@
+#include <Servo.h>
+
+const int sensorTemperaturaPin = A0;  
+const int sensorLuzPin = A1;           
+const int atuadorLED = 9;              
+const int atuadorMotor = 10;           
+const int atuadorServoPin = 11;        
+const int botaoPin = 3;               
+
+float temperatura;
+int luz;
+bool ledEstado = LOW;                   
+
+Servo meuServo;
+
+void setup() {
+    Serial.begin(9600);
+    
+
+    pinMode(atuadorLED, OUTPUT);
+    pinMode(atuadorMotor, OUTPUT);
+    pinMode(botaoPin, INPUT_PULLUP);
+    
+    meuServo.attach(atuadorServoPin); 
+}
+
+void loop() {
+
+    temperatura = analogRead(sensorTemperaturaPin) * (5.0 / 1023.0) * 100;
+ 
+    luz = analogRead(sensorLuzPin);
+
+  
+    Serial.print("Temperatura: ");
+    Serial.print(temperatura);
+    Serial.println(" °C");
+
+    Serial.print("Luminosidade: ");
+    Serial.println(luz);
+
+
+    if (luz < 500) { 
+        digitalWrite(atuadorLED, HIGH); 
+    } else {
+        digitalWrite(atuadorLED, LOW);
+    }
+    if (digitalRead(botaoPin) == LOW) { 
+        ledEstado = !ledEstado; 
+        digitalWrite(atuadorLED, ledEstado);
+        digitalWrite(atuadorMotor, ledEstado);
+        delay(500); // Debounce
+    }
+    if (temperatura > 25) {
+        meuServo.write(180);
+    } else {
+        meuServo.write(0); 
+    }
+
+    delay(1000);
+}
